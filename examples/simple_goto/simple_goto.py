@@ -10,6 +10,7 @@ Demonstrates how to arm and takeoff in Copter and how to navigate to points usin
 Full documentation is provided at http://python.dronekit.io/examples/simple_goto.html
 """
 
+
 from __future__ import print_function
 import time
 from dronekit import connect, VehicleMode, LocationGlobalRelative
@@ -34,7 +35,7 @@ if not connection_string:
 
 
 # Connect to the Vehicle
-print('Connecting to vehicle on: %s' % connection_string)
+print(f'Connecting to vehicle on: {connection_string}')
 vehicle = connect(connection_string, wait_ready=True)
 
 

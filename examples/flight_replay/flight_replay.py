@@ -53,8 +53,9 @@ def distance_to_current_waypoint():
     lon = missionitem.y
     alt = missionitem.z
     targetWaypointLocation = LocationGlobalRelative(lat,lon,alt)
-    distancetopoint = get_distance_metres(vehicle.location.global_frame, targetWaypointLocation)
-    return distancetopoint
+    return get_distance_metres(
+        vehicle.location.global_frame, targetWaypointLocation
+    )
 
 def position_messages_from_tlog(filename):
     """
@@ -81,8 +82,7 @@ def position_messages_from_tlog(filename):
     #   - only keep the first 100 points that meet the above criteria.
     num_points = len(messages)
     keep_point_distance=3 #metres
-    kept_messages = []
-    kept_messages.append(messages[0]) #Keep the first message
+    kept_messages = [messages[0]]
     pt1num=0
     pt2num=1
     while True:
@@ -158,7 +158,7 @@ else:
     connection_string = sitl.connection_string()
 
 # Connect to the Vehicle
-print('Connecting to vehicle on: %s' % connection_string)
+print(f'Connecting to vehicle on: {connection_string}')
 vehicle = connect(connection_string, wait_ready=True)
 
 
@@ -169,13 +169,13 @@ cmds.wait_ready()
 
 cmds = vehicle.commands
 cmds.clear()
+# To prevent accidents we don't trust the altitude in the original flight, instead
+# we just put in a conservative cruising altitude.
+altitude = 30.0
 for pt in messages:
     #print "Point: %d %d" % (pt.lat, pt.lon,)
     lat = pt.lat
     lon = pt.lon
-    # To prevent accidents we don't trust the altitude in the original flight, instead
-    # we just put in a conservative cruising altitude.
-    altitude = 30.0
     cmd = Command( 0,
                    0,
                    0,
@@ -207,7 +207,9 @@ while (vehicle.mode.name != "AUTO"):
 time_start = time.time()
 while time.time() - time_start < 60:
     nextwaypoint=vehicle.commands.next
-    print('Distance to waypoint (%s): %s' % (nextwaypoint, distance_to_current_waypoint()))
+    print(
+        f'Distance to waypoint ({nextwaypoint}): {distance_to_current_waypoint()}'
+    )
 
     if nextwaypoint==len(messages):
         print("Exit 'standard' mission when start heading to final waypoint")

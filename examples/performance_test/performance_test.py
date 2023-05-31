@@ -12,6 +12,7 @@ minimum, and most recent interval for 30 seconds.
 
 Full documentation is provided at http://python.dronekit.io/examples/performance_test.html
 """
+
 from __future__ import print_function
 from dronekit import connect
 from pymavlink import mavutil
@@ -21,7 +22,7 @@ from datetime import datetime
 
 
 #Set up option parsing to get connection string
-import argparse  
+import argparse
 parser = argparse.ArgumentParser(description='Generates max, min and current interval between message sent and ack recieved. Will start and connect to SITL if no connection string specified.')
 parser.add_argument('--connect', 
                    help="vehicle connection target string. If not specified, SITL automatically started and used.")
@@ -37,7 +38,7 @@ if not connection_string:
 
 
 # Connect to the Vehicle
-print('Connecting to vehicle on: %s' % connection_string)
+print(f'Connecting to vehicle on: {connection_string}')
 vehicle = connect(connection_string, wait_ready=True)
 
 #global vehicle
@@ -47,8 +48,7 @@ def cur_usec():
     """Return current time in usecs"""
     # t = time.time()
     dt = datetime.now()
-    t = dt.minute * 60 + dt.second + dt.microsecond / (1e6)
-    return t
+    return dt.minute * 60 + dt.second + dt.microsecond / (1e6)
 
 class MeasureTime(object):
     def __init__(self):
@@ -109,7 +109,7 @@ def send_testpackets():
 send_testpackets()
 
 print("Logging for 30 seconds")
-for x in range(1,30):
+for _ in range(1,30):
     time.sleep(1)
 
 # Close vehicle object before exiting script

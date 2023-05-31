@@ -15,6 +15,7 @@ Tested in Python 2.7.10
 
 """
 
+
 from dronekit import connect, VehicleMode, LocationGlobal, LocationGlobalRelative
 from pymavlink import mavutil # Needed for command message definitions
 import time
@@ -38,7 +39,7 @@ if not connection_string:
 
 
 # Connect to the Vehicle
-print('Connecting to vehicle on: %s' % connection_string)
+print(f'Connecting to vehicle on: {connection_string}')
 vehicle = connect(connection_string, wait_ready=True)
 
 def arm_and_takeoff_nogps(aTargetAltitude):

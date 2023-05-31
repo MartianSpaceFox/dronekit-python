@@ -4,6 +4,7 @@
 """
 © Copyright 2015-2016, 3D Robotics.
 """
+
 from __future__ import print_function
 #
 # This is a small example of the python drone API - an ultra minimal GCS
@@ -17,7 +18,7 @@ from Tkinter import *
 global root
 
 #Set up option parsing to get connection string
-import argparse  
+import argparse
 parser = argparse.ArgumentParser(description='Tracks GPS position of your computer (Linux only). Connects to SITL on local PC by default.')
 parser.add_argument('--connect',
                    help="vehicle connection target.")
@@ -33,7 +34,7 @@ if not connection_string:
     connection_string = sitl.connection_string()
 
 # Connect to the Vehicle
-print('Connecting to vehicle on: %s' % connection_string)
+print(f'Connecting to vehicle on: {connection_string}')
 vehicle = connect(connection_string, wait_ready=True)
 
 def setMode(mode):

@@ -9,6 +9,7 @@ This example shows how to move/direct Copter and send commands in GUIDED mode us
 
 Example documentation: http://python.dronekit.io/examples/guided-set-speed-yaw-demo.html
 """
+
 from __future__ import print_function
 
 from dronekit import connect, VehicleMode, LocationGlobal, LocationGlobalRelative
@@ -18,7 +19,7 @@ import math
 
 
 #Set up option parsing to get connection string
-import argparse  
+import argparse
 parser = argparse.ArgumentParser(description='Control Copter and send commands in GUIDED mode ')
 parser.add_argument('--connect', 
                    help="Vehicle connection target string. If not specified, SITL automatically started and used.")
@@ -36,7 +37,7 @@ if not connection_string:
 
 
 # Connect to the Vehicle
-print('Connecting to vehicle on: %s' % connection_string)
+print(f'Connecting to vehicle on: {connection_string}')
 vehicle = connect(connection_string, wait_ready=True)
 
 
@@ -106,10 +107,7 @@ def condition_yaw(heading, relative=False):
     For more information see: 
     http://copter.ardupilot.com/wiki/common-mavlink-mission-command-messages-mav_cmd/#mav_cmd_condition_yaw
     """
-    if relative:
-        is_relative = 1 #yaw relative to direction of travel
-    else:
-        is_relative = 0 #yaw is an absolute angle
+    is_relative = 1 if relative else 0
     # create the CONDITION_YAW command using command_long_encode()
     msg = vehicle.message_factory.command_long_encode(
         0, 0,    # target system, target component
@@ -364,7 +362,7 @@ def send_ned_velocity(velocity_x, velocity_y, velocity_z, duration):
         0, 0)    # yaw, yaw_rate (not supported yet, ignored in GCS_Mavlink) 
 
     # send command to vehicle on 1 Hz cycle
-    for x in range(0,duration):
+    for _ in range(0,duration):
         vehicle.send_mavlink(msg)
         time.sleep(1)
     
@@ -403,7 +401,7 @@ def send_global_velocity(velocity_x, velocity_y, velocity_z, duration):
         0, 0)    # yaw, yaw_rate (not supported yet, ignored in GCS_Mavlink) 
 
     # send command to vehicle on 1 Hz cycle
-    for x in range(0,duration):
+    for _ in range(0,duration):
         vehicle.send_mavlink(msg)
         time.sleep(1)    
 
@@ -414,8 +412,9 @@ Fly a triangular path using the standard Vehicle.simple_goto() method.
 The method is called indirectly via a custom "goto" that allows the target position to be
 specified as a distance in metres (North/East) from the current position, and which reports
 the distance-to-target.
-"""	
-print("TRIANGLE path using standard Vehicle.simple_goto()")
+"""
+
+	print("TRIANGLE path using standard Vehicle.simple_goto()")
 
 print("Set groundspeed to 5m/s.")
 vehicle.groundspeed=5
@@ -444,7 +443,7 @@ and which reports the distance-to-target.
 The code also sets the speed (MAV_CMD_DO_CHANGE_SPEED). In AC3.2.1 Copter will accelerate to this speed 
 near the centre of its journey and then decelerate as it reaches the target. 
 In AC3.3 the speed changes immediately.
-"""	
+"""
 print("TRIANGLE path using standard SET_POSITION_TARGET_GLOBAL_INT message and with varying speed.")
 print("Position South 100 West 130")
 
@@ -484,9 +483,9 @@ camera gimbal at the the selected location (in this case it aligns the whole veh
 print("SQUARE path using SET_POSITION_TARGET_LOCAL_NED and position parameters")
 DURATION = 20 #Set duration for each segment.
 
-print("North 50m, East 0m, 10m altitude for %s seconds" % DURATION)
+print(f"North 50m, East 0m, 10m altitude for {DURATION} seconds")
 goto_position_target_local_ned(50,0,-10)
-print("Point ROI at current location (home position)") 
+print("Point ROI at current location (home position)")
 # NOTE that this has to be called after the goto command as first "move" command of a particular type
 # "resets" ROI/YAW commands
 set_roi(vehicle.location.global_relative_frame)
@@ -611,7 +610,7 @@ print("Get new home location")
 cmds = vehicle.commands
 cmds.download()
 cmds.wait_ready()
-print(" Home Location: %s" % vehicle.home_location)
+print(f" Home Location: {vehicle.home_location}")
 
 
 print("Yaw 90 relative (to previous yaw heading)")

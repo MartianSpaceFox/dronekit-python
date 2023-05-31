@@ -7,6 +7,7 @@ mission_basic.py: Example demonstrating basic mission operations including creat
 
 Full documentation is provided at http://python.dronekit.io/examples/mission_basic.html
 """
+
 from __future__ import print_function
 
 from dronekit import connect, VehicleMode, LocationGlobalRelative, LocationGlobal, Command
@@ -16,7 +17,7 @@ from pymavlink import mavutil
 
 
 #Set up option parsing to get connection string
-import argparse  
+import argparse
 parser = argparse.ArgumentParser(description='Demonstrates basic mission operations.')
 parser.add_argument('--connect', 
                    help="vehicle connection target string. If not specified, SITL automatically started and used.")
@@ -34,7 +35,7 @@ if not connection_string:
 
 
 # Connect to the Vehicle
-print('Connecting to vehicle on: %s' % connection_string)
+print(f'Connecting to vehicle on: {connection_string}')
 vehicle = connect(connection_string, wait_ready=True)
 
 
@@ -88,8 +89,9 @@ def distance_to_current_waypoint():
     lon = missionitem.y
     alt = missionitem.z
     targetWaypointLocation = LocationGlobalRelative(lat,lon,alt)
-    distancetopoint = get_distance_metres(vehicle.location.global_frame, targetWaypointLocation)
-    return distancetopoint
+    return get_distance_metres(
+        vehicle.location.global_frame, targetWaypointLocation
+    )
 
 
 def download_mission():
@@ -194,8 +196,10 @@ vehicle.mode = VehicleMode("AUTO")
 
 while True:
     nextwaypoint=vehicle.commands.next
-    print('Distance to waypoint (%s): %s' % (nextwaypoint, distance_to_current_waypoint()))
-  
+    print(
+        f'Distance to waypoint ({nextwaypoint}): {distance_to_current_waypoint()}'
+    )
+
     if nextwaypoint==3: #Skip to next waypoint
         print('Skipping to Waypoint 5 when reach waypoint 3')
         vehicle.commands.next = 5

@@ -32,7 +32,7 @@ def test_iterating(connpath):
     # Iterate over parameters.
     for k, v in vehicle.parameters.items():
         break
-    for key in vehicle.parameters:
+    for _ in vehicle.parameters:
         break
 
     vehicle.close()
@@ -56,7 +56,7 @@ def test_setting(connpath):
     i = 5
     while not result['success'] and i > 0:
         time.sleep(1)
-        i = i - 1
+        i -= 1
 
     assert_equals(result['success'], True)
 

@@ -11,6 +11,7 @@ into a list, and can be modified before saving and/or uploading.
 
 Documentation is provided at http://python.dronekit.io/examples/mission_import_export.html
 """
+
 from __future__ import print_function
 
 
@@ -19,7 +20,7 @@ import time
 
 
 #Set up option parsing to get connection string
-import argparse  
+import argparse
 parser = argparse.ArgumentParser(description='Demonstrates mission import/export from a file.')
 parser.add_argument('--connect', 
                    help="Vehicle connection target string. If not specified, SITL automatically started and used.")
@@ -37,7 +38,7 @@ if not connection_string:
 
 
 # Connect to the Vehicle
-print('Connecting to vehicle on: %s' % connection_string)
+print(f'Connecting to vehicle on: {connection_string}')
 vehicle = connect(connection_string, wait_ready=True)
 
 # Check that vehicle is armable. 
@@ -107,13 +108,10 @@ def download_mission():
     It is used in save_mission() to get the file information to save.
     """
     print(" Download mission from vehicle")
-    missionlist=[]
     cmds = vehicle.commands
     cmds.download()
     cmds.wait_ready()
-    for cmd in cmds:
-        missionlist.append(cmd)
-    return missionlist
+    return list(cmds)
 
 def save_mission(aFileName):
     """
@@ -144,7 +142,7 @@ def printfile(aFileName):
     print("\nMission file: %s" % aFileName)
     with open(aFileName) as f:
         for line in f:
-            print(' %s' % line.strip())        
+            print(f' {line.strip()}')        
 
 
 import_mission_filename = 'mpmission.txt'

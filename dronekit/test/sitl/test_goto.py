@@ -32,7 +32,7 @@ def test_goto(connpath):
         i = 60
         while not vehicle.is_armable and i > 0:
             time.sleep(1)
-            i = i - 1
+            i -= 1
         assert_equals(vehicle.is_armable, True)
 
         # Copter should arm in GUIDED mode
@@ -41,7 +41,7 @@ def test_goto(connpath):
         while vehicle.mode.name != 'GUIDED' and i > 0:
             # print " Waiting for guided %s seconds..." % (i,)
             time.sleep(1)
-            i = i - 1
+            i -= 1
         assert_equals(vehicle.mode.name, 'GUIDED')
 
         # Arm copter.
@@ -50,7 +50,7 @@ def test_goto(connpath):
         while not vehicle.armed and vehicle.mode.name == 'GUIDED' and i > 0:
             # print " Waiting for arming %s seconds..." % (i,)
             time.sleep(1)
-            i = i - 1
+            i -= 1
         assert_equals(vehicle.armed, True)
 
         # Take off to target altitude

@@ -13,6 +13,7 @@ When you want to stop follow-me, either change vehicle modes or type Ctrl+C to e
 
 Example documentation: http://python.dronekit.io/examples/follow_me.html
 """
+
 from __future__ import print_function
 
 from dronekit import connect, VehicleMode, LocationGlobalRelative
@@ -22,7 +23,7 @@ import time
 import sys
 
 #Set up option parsing to get connection string
-import argparse  
+import argparse
 parser = argparse.ArgumentParser(description='Tracks GPS position of your computer (Linux only).')
 parser.add_argument('--connect', 
                    help="vehicle connection target string. If not specified, SITL automatically started and used.")
@@ -39,7 +40,7 @@ if not connection_string:
     connection_string = sitl.connection_string()
 
 # Connect to the Vehicle
-print('Connecting to vehicle on: %s' % connection_string)
+print(f'Connecting to vehicle on: {connection_string}')
 vehicle = connect(connection_string, wait_ready=True, timeout=300)
 
 
@@ -87,11 +88,11 @@ try:
     arm_and_takeoff(5)
 
     while True:
-    
+
         if vehicle.mode.name != "GUIDED":
             print("User has changed flight modes - aborting follow-me")
             break    
-            
+
         # Read the GPS state from the laptop
         next(gpsd)
 
@@ -99,7 +100,7 @@ try:
         if (gpsd.valid & gps.LATLON_SET) != 0:
             altitude = 30  # in meters
             dest = LocationGlobalRelative(gpsd.fix.latitude, gpsd.fix.longitude, altitude)
-            print("Going to: %s" % dest)
+            print(f"Going to: {dest}")
 
             # A better implementation would only send new waypoints if the position had changed significantly
             vehicle.simple_goto(dest)
@@ -107,7 +108,7 @@ try:
             # Send a new target every two seconds
             # For a complete implementation of follow me you'd want adjust this delay
             time.sleep(2)
-            
+
 except socket.error:
     print("Error: gpsd service does not seem to be running, plug in USB GPS or run run-fake-gps.sh")
     sys.exit(1)

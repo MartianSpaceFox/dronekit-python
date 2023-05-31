@@ -14,6 +14,7 @@ intercepted using the message_listener decorator.
 
 Full documentation is provided at http://python.dronekit.io/examples/create_attribute.html
 """
+
 from __future__ import print_function
 
 from dronekit import connect, Vehicle
@@ -23,7 +24,7 @@ import time
 
 
 #Set up option parsing to get connection string
-import argparse  
+import argparse
 parser = argparse.ArgumentParser(description='Demonstrates how to create attributes from MAVLink messages. ')
 parser.add_argument('--connect', 
                    help="Vehicle connection target string. If not specified, SITL automatically started and used.")
@@ -41,7 +42,7 @@ if not connection_string:
 
 
 # Connect to the Vehicle
-print('Connecting to vehicle on: %s' % connection_string)
+print(f'Connecting to vehicle on: {connection_string}')
 vehicle = connect(connection_string, wait_ready=True, vehicle_class=MyVehicle)
 
 # Add observer for the custom attribute

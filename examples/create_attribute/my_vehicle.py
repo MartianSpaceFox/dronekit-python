@@ -49,7 +49,7 @@ class RawIMU(object):
         """
         String representation used to print the RawIMU object. 
         """
-        return "RAW_IMU: time_boot_us={},xacc={},yacc={},zacc={},xgyro={},ygyro={},zgyro={},xmag={},ymag={},zmag={}".format(self.time_boot_us, self.xacc, self.yacc,self.zacc,self.xgyro,self.ygyro,self.zgyro,self.xmag,self.ymag,self.zmag)
+        return f"RAW_IMU: time_boot_us={self.time_boot_us},xacc={self.xacc},yacc={self.yacc},zacc={self.zacc},xgyro={self.xgyro},ygyro={self.ygyro},zgyro={self.zgyro},xmag={self.xmag},ymag={self.ymag},zmag={self.zmag}"
 
    
 class MyVehicle(Vehicle):

@@ -182,7 +182,7 @@ class MAVConnection(object):
                             raise APIException('Connection aborting during read')
                         raise
                     except Exception as e:
-                        self._logger.exception('mav send error: %s' % str(e))
+                        self._logger.exception(f'mav send error: {str(e)}')
                         break
             except APIException as e:
                 self._logger.exception("Exception in MAVLink write loop", exc_info=True)
@@ -192,9 +192,7 @@ class MAVConnection(object):
 
             except Exception as e:
                 # http://bugs.python.org/issue1856
-                if not self._alive:
-                    pass
-                else:
+                if self._alive:
                     self._alive = False
                     self.master.close()
                     self._death_error = e
@@ -225,7 +223,7 @@ class MAVConnection(object):
                             # Avoid
                             #   invalid MAVLink prefix '73'
                             #   invalid MAVLink prefix '13'
-                            self._logger.debug('mav recv error: %s' % str(e))
+                            self._logger.debug(f'mav recv error: {str(e)}')
                             msg = None
                         except Exception:
                             # Log any other unexpected exception
@@ -240,8 +238,8 @@ class MAVConnection(object):
                                 fn(self, msg)
                             except Exception:
                                 self._logger.exception(
-                                    'Exception in message handler for %s' % msg.get_type(),
-                                    exc_info=True
+                                    f'Exception in message handler for {msg.get_type()}',
+                                    exc_info=True,
                                 )
 
             except APIException as e:
@@ -253,9 +251,7 @@ class MAVConnection(object):
 
             except Exception as e:
                 # http://bugs.python.org/issue1856
-                if not self._alive:
-                    pass
-                else:
+                if self._alive:
                     self._alive = False
                     self.master.close()
                     self._death_error = e
@@ -323,7 +319,10 @@ class MAVConnection(object):
                     assert len(msg.get_msgbuf()) > 0
                     target.out_queue.put(msg.get_msgbuf())
                 except:
-                    self._logger.exception('Could not pack this object on receive: %s' % type(msg), exc_info=True)
+                    self._logger.exception(
+                        f'Could not pack this object on receive: {type(msg)}',
+                        exc_info=True,
+                    )
 
         # target -> self -> vehicle
         @target.forward_message
@@ -337,6 +336,9 @@ class MAVConnection(object):
                     assert len(msg.get_msgbuf()) > 0
                     self.out_queue.put(msg.get_msgbuf())
                 except:
-                    self._logger.exception('Could not pack this object on forward: %s' % type(msg), exc_info=True)
+                    self._logger.exception(
+                        f'Could not pack this object on forward: {type(msg)}',
+                        exc_info=True,
+                    )
 
         return target

@@ -10,6 +10,7 @@ A CherryPy based web application that displays a mapbox map to let you view the 
 Full documentation is provided at http://python.dronekit.io/examples/drone_delivery.html
 """
 
+
 from __future__ import print_function
 import os
 import simplejson
@@ -35,7 +36,7 @@ if not connection_string:
     connection_string = sitl.connection_string()
 
 local_path = os.path.dirname(os.path.abspath(__file__))
-print("local path: %s" % local_path)
+print(f"local path: {local_path}")
 
 
 cherrypy_conf = {
@@ -157,7 +158,7 @@ class Templates:
     def __init__(self, home_coords):
         self.home_coords = home_coords
         self.options = self.get_options()
-        self.environment = Environment(loader=FileSystemLoader(local_path + '/html'))
+        self.environment = Environment(loader=FileSystemLoader(f'{local_path}/html'))
 
     def get_options(self):
         return {'width': 670,
@@ -193,7 +194,7 @@ class Templates:
         return self.get_template('command')
 
     def get_template(self, file_name):
-        template = self.environment.get_template(file_name + '.html')
+        template = self.environment.get_template(f'{file_name}.html')
         return template.render(options=self.options)
 
 
@@ -226,7 +227,7 @@ class DroneDelivery(object):
 
 
 # Connect to the Vehicle
-print('Connecting to vehicle on: %s' % connection_string)
+print(f'Connecting to vehicle on: {connection_string}')
 vehicle = connect(connection_string, wait_ready=True)
 
 print('Launching Drone...')

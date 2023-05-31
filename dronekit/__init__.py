@@ -123,7 +123,7 @@ class LocationGlobal(object):
         self.global_frame = None
 
     def __str__(self):
-        return "LocationGlobal:lat=%s,lon=%s,alt=%s" % (self.lat, self.lon, self.alt)
+        return f"LocationGlobal:lat={self.lat},lon={self.lon},alt={self.alt}"
 
 
 class LocationGlobalRelative(object):
@@ -159,7 +159,7 @@ class LocationGlobalRelative(object):
         self.global_frame = None
 
     def __str__(self):
-        return "LocationGlobalRelative:lat=%s,lon=%s,alt=%s" % (self.lat, self.lon, self.alt)
+        return f"LocationGlobalRelative:lat={self.lat},lon={self.lon},alt={self.alt}"
 
 
 class LocationLocal(object):
@@ -182,7 +182,7 @@ class LocationLocal(object):
         self.down = down
 
     def __str__(self):
-        return "LocationLocal:north=%s,east=%s,down=%s" % (self.north, self.east, self.down)
+        return f"LocationLocal:north={self.north},east={self.east},down={self.down}"
 
     def distance_home(self):
         """
@@ -217,7 +217,7 @@ class GPSInfo(object):
         self.satellites_visible = satellites_visible
 
     def __str__(self):
-        return "GPSInfo:fix=%s,num_sat=%s" % (self.fix_type, self.satellites_visible)
+        return f"GPSInfo:fix={self.fix_type},num_sat={self.satellites_visible}"
 
 
 class Wind(object):
@@ -236,7 +236,7 @@ class Wind(object):
         self.wind_speed_z = wind_speed_z
     
     def __str__(self):
-        return "Wind: wind direction: {}, wind speed: {}, wind speed z: {}".format(self.wind_direction, self.wind_speed, self.wind_speed_z)
+        return f"Wind: wind direction: {self.wind_direction}, wind speed: {self.wind_speed}, wind speed z: {self.wind_speed_z}"
 
 
 class Battery(object):
@@ -252,18 +252,11 @@ class Battery(object):
 
     def __init__(self, voltage, current, level):
         self.voltage = voltage / 1000.0
-        if current == -1:
-            self.current = None
-        else:
-            self.current = current / 100.0
-        if level == -1:
-            self.level = None
-        else:
-            self.level = level
+        self.current = None if current == -1 else current / 100.0
+        self.level = None if level == -1 else level
 
     def __str__(self):
-        return "Battery:voltage={},current={},level={}".format(self.voltage, self.current,
-                                                               self.level)
+        return f"Battery:voltage={self.voltage},current={self.current},level={self.level}"
 
 
 class Rangefinder(object):
@@ -281,7 +274,7 @@ class Rangefinder(object):
         self.voltage = voltage
 
     def __str__(self):
-        return "Rangefinder: distance={}, voltage={}".format(self.distance, self.voltage)
+        return f"Rangefinder: distance={self.distance}, voltage={self.voltage}"
 
 
 class Version(object):
@@ -343,9 +336,7 @@ class Version(object):
         """
         if self.release is None:
             return None
-        if self.release == 255:
-            return 0
-        return self.release % 64
+        return 0 if self.release == 255 else self.release % 64
 
     def release_type(self):
         """
@@ -381,9 +372,9 @@ class Version(object):
             release_type = ""
         else:
             # e.g. "-rc23"
-            release_type = "-" + str(self.release_type()) + str(self.release_version())
+            release_type = f"-{str(self.release_type())}{str(self.release_version())}"
 
-        return prefix + "%s.%s.%s" % (self.major, self.minor, self.patch) + release_type
+        return f"{prefix}{self.major}.{self.minor}.{self.patch}{release_type}"
 
 
 class Capabilities:
@@ -516,7 +507,7 @@ class VehicleMode(object):
         self.name = name
 
     def __str__(self):
-        return "VehicleMode:%s" % self.name
+        return f"VehicleMode:{self.name}"
 
     def __eq__(self, other):
         return self.name == other
@@ -540,7 +531,7 @@ class SystemStatus(object):
         self.state = state
 
     def __str__(self):
-        return "SystemStatus:%s" % self.state
+        return f"SystemStatus:{self.state}"
 
     def __eq__(self, other):
         return self.state == other
@@ -663,13 +654,19 @@ class HasObservers(object):
             try:
                 fn(self, attr_name, value)
             except Exception:
-                self._logger.exception('Exception in attribute handler for %s' % attr_name, exc_info=True)
+                self._logger.exception(
+                    f'Exception in attribute handler for {attr_name}',
+                    exc_info=True,
+                )
 
         for fn in self._attribute_listeners.get('*', []):
             try:
                 fn(self, attr_name, value)
             except Exception:
-                self._logger.exception('Exception in attribute handler for %s' % attr_name, exc_info=True)
+                self._logger.exception(
+                    f'Exception in attribute handler for {attr_name}',
+                    exc_info=True,
+                )
 
     def on_attribute(self, name):
         """
@@ -741,7 +738,7 @@ class ChannelsOverride(dict):
 
     def __setitem__(self, key, value):
         if not (0 < int(key) <= self._count):
-            raise KeyError('Invalid channel index %s' % key)
+            raise KeyError(f'Invalid channel index {key}')
         if not value:
             try:
                 dict.__delitem__(self, str(key))
@@ -1065,7 +1062,7 @@ class Vehicle(HasObservers):
             self._ready_attrs.add(name)
 
         # Attaches message listeners.
-        self._message_listeners = dict()
+        self._message_listeners = {}
 
         @handler.forward_message
         def listener(_, msg):
@@ -1248,7 +1245,9 @@ class Vehicle(HasObservers):
             self._autopilot_type = m.autopilot
             self._vehicle_type = m.type
             if self._is_mode_available(m.custom_mode, m.base_mode) is False:
-                raise APIException("mode (%s, %s) not available on mavlink definition" % (m.custom_mode, m.base_mode))
+                raise APIException(
+                    f"mode ({m.custom_mode}, {m.base_mode}) not available on mavlink definition"
+                )
             if self._autopilot_type == mavutil.mavlink.MAV_AUTOPILOT_PX4:
                 self._flightmode = mavutil.interpret_px4_mode(m.base_mode, m.custom_mode)
             else:
@@ -1280,25 +1279,26 @@ class Vehicle(HasObservers):
 
         @self.on_message(['WAYPOINT', 'MISSION_ITEM'])
         def listener(self, name, msg):
-            if not self._wp_loaded:
-                if msg.seq == 0:
-                    if not (msg.x == 0 and msg.y == 0 and msg.z == 0):
-                        self._home_location = LocationGlobal(msg.x, msg.y, msg.z)
+            if self._wp_loaded:
+                return
+            if msg.seq == 0:
+                if msg.x != 0 or msg.y != 0 or msg.z != 0:
+                    self._home_location = LocationGlobal(msg.x, msg.y, msg.z)
 
-                if msg.seq > self._wploader.count():
-                    # Unexpected waypoint
-                    pass
-                elif msg.seq < self._wploader.count():
-                    # Waypoint duplicate
-                    pass
+            if msg.seq > self._wploader.count():
+                # Unexpected waypoint
+                pass
+            elif msg.seq < self._wploader.count():
+                # Waypoint duplicate
+                pass
+            else:
+                self._wploader.add(msg)
+
+                if msg.seq + 1 < self._wploader.expected_count:
+                    self._master.waypoint_request_send(msg.seq + 1)
                 else:
-                    self._wploader.add(msg)
-
-                    if msg.seq + 1 < self._wploader.expected_count:
-                        self._master.waypoint_request_send(msg.seq + 1)
-                    else:
-                        self._wp_loaded = True
-                        self.notify_attribute_listeners('commands', self.commands)
+                    self._wp_loaded = True
+                    self.notify_attribute_listeners('commands', self.commands)
 
         # Waypoint send to master
         @self.on_message(['WAYPOINT_REQUEST', 'MISSION_REQUEST'])
@@ -1395,11 +1395,14 @@ class Vehicle(HasObservers):
             # Timeouts.
             if self._heartbeat_started:
                 if self._heartbeat_error and monotonic.monotonic() - self._heartbeat_lastreceived > self._heartbeat_error > 0:
-                    raise APIException('No heartbeat in %s seconds, aborting.' %
-                                       self._heartbeat_error)
+                    raise APIException(
+                        f'No heartbeat in {self._heartbeat_error} seconds, aborting.'
+                    )
                 elif monotonic.monotonic() - self._heartbeat_lastreceived > self._heartbeat_warning:
-                    if self._heartbeat_timeout is False:
-                        self._logger.warning('Link timeout, no heartbeat in last %s seconds' % self._heartbeat_warning)
+                    if not self._heartbeat_timeout:
+                        self._logger.warning(
+                            f'Link timeout, no heartbeat in last {self._heartbeat_warning} seconds'
+                        )
                         self._heartbeat_timeout = True
 
         @self.on_message(['HEARTBEAT'])
@@ -1558,13 +1561,19 @@ class Vehicle(HasObservers):
             try:
                 fn(self, name, msg)
             except Exception:
-                self._logger.exception('Exception in message handler for %s' % msg.get_type(), exc_info=True)
+                self._logger.exception(
+                    f'Exception in message handler for {msg.get_type()}',
+                    exc_info=True,
+                )
 
         for fn in self._message_listeners.get('*', []):
             try:
                 fn(self, name, msg)
             except Exception:
-                self._logger.exception('Exception in message handler for %s' % msg.get_type(), exc_info=True)
+                self._logger.exception(
+                    f'Exception in message handler for {msg.get_type()}',
+                    exc_info=True,
+                )
 
     def close(self):
         return self._handler.close()
@@ -1632,9 +1641,7 @@ class Vehicle(HasObservers):
             # set mode to LOITER
             vehicle.mode = 5
         """
-        if not self._flightmode:
-            return None
-        return VehicleMode(self._flightmode)
+        return None if not self._flightmode else VehicleMode(self._flightmode)
 
     @mode.setter
     def mode(self, v):
@@ -2390,7 +2397,7 @@ class Vehicle(HasObservers):
         raise_exception = kwargs.get('raise_exception', True)
 
         # Vehicle defaults for wait_ready(True) or wait_ready()
-        if list(types) == [True] or list(types) == []:
+        if list(types) in [[True], []]:
             types = self._default_ready_attrs
 
         if not all(isinstance(item, basestring) for item in types):
@@ -2408,8 +2415,9 @@ class Vehicle(HasObservers):
             now = monotonic.monotonic()
             if now - start > timeout:
                 if raise_exception:
-                    raise TimeoutError('wait_ready experienced a timeout after %s seconds.' %
-                                       timeout)
+                    raise TimeoutError(
+                        f'wait_ready experienced a timeout after {timeout} seconds.'
+                    )
                 else:
                     return False
             if (still_waiting_callback and
@@ -3103,10 +3111,10 @@ class CommandSequence(object):
         if isinstance(index, slice):
             return [self[ii] for ii in range(*index.indices(len(self)))]
         elif isinstance(index, int):
-            item = self._vehicle._wploader.wp(index + 1)
-            if not item:
-                raise IndexError('Index %s out of range.' % index)
-            return item
+            if item := self._vehicle._wploader.wp(index + 1):
+                return item
+            else:
+                raise IndexError(f'Index {index} out of range.')
         else:
             raise TypeError('Invalid argument type.')
 
@@ -3116,7 +3124,9 @@ class CommandSequence(object):
 
 
 def default_still_waiting_callback(atts):
-    logging.getLogger(__name__).debug("Still waiting for data from vehicle: %s" % ','.join(atts))
+    logging.getLogger(__name__).debug(
+        f"Still waiting for data from vehicle: {','.join(atts)}"
+    )
 
 
 def connect(ip,
